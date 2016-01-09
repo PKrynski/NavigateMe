@@ -9,13 +9,12 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -23,20 +22,30 @@ import java.util.Map;
  */
 public class NavigateMe {
 
-    HashMap<String, String> cities = new HashMap<>();
+    TreeMap<String, String> cities = new TreeMap<>();
 
     /**
      * @param args the command line arguments
-     * @throws java.net.MalformedURLException
      */
-    public static void main(String[] args) throws MalformedURLException, IOException {
+    public static void main(String[] args) {
         // TODO code application logic here
 
         NavigateMe navigateMe = new NavigateMe();
 
-        navigateMe.getCities();
+        try {
+            navigateMe.getCities();
+        } catch (IOException ex) {
+            System.err.println("Nie mogę pobrać listy miast.");
+        }
         
-        ArrayList<String> path = navigateMe.getPath("Warszawa", "Kraków");
+        //navigateMe.ListCities();
+        
+        ArrayList<String> path = null;
+        try {
+            path = navigateMe.getPath("ELK", "SZZ");
+        } catch (IOException ex) {
+            System.err.println("Nie mogę pobrać trasy.");
+        }
         
         System.out.println("Twoja trasa:");
         
@@ -55,7 +64,7 @@ public class NavigateMe {
         this.cities.put(key, value);
     }
     
-    public HashMap getCityMap() {
+    public TreeMap getCityMap() {
         return this.cities;
     }
 
@@ -96,12 +105,24 @@ public class NavigateMe {
         }
 
     }
+    
+    public void ListCities() {
+        
+        System.out.println("Dostępna miasta:");
+        
+        for( String key : this.cities.keySet() ) {
+            System.out.println("- " + this.cities.get(key));
+        }
+        
+    }
 
     public ArrayList<String> getPath(String from, String to) throws IOException {
 
         ArrayList path = new ArrayList();
+        
+        String preURL = "http://pi.zetis.pw/krynskip/web-pathfinder/routes?from=" + from + "&to=" + to;
 
-        URL url = new URL("http://pi.zetis.pw/krynskip/web-pathfinder/routes?from=WAW&to=KRK");
+        URL url = new URL(preURL);
 
         URLConnection connection = url.openConnection();
 
