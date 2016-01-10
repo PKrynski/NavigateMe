@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package navigateme;
 
 import com.google.gson.Gson;
@@ -65,7 +60,7 @@ public class NavigateMe {
 
     public void ListCities() {
 
-        System.out.println("Dostępna miasta:");
+        System.out.println("\nDostępne miasta:");
 
         for (String key : this.cities.keySet()) {
             System.out.println("- " + this.cities.get(key));
@@ -127,10 +122,6 @@ public class NavigateMe {
 
     public static void main(String[] args) {
 
-        for (int i = 0; i < args.length; i++) {
-            System.out.println(args[i]);
-        }
-
         NavigateMe navigateMe = new NavigateMe();
 
         try {
@@ -139,26 +130,38 @@ public class NavigateMe {
             System.err.println("Nie mogę pobrać listy miast.");
         }
 
-        //navigateMe.ListCities();
-        ArrayList<String> path = null;
-        try {
-            path = navigateMe.getPath("ELK", "SZZ");
-        } catch (IOException ex) {
-            System.err.println("Nie mogę pobrać trasy.");
+        if (args.length < 2) {
+            System.out.println("Podano za mało argumentów.");
+            System.out.println("Jako pierwszy arugument podaj nazwę miasta początkowego.");
+            System.out.println("Jako drugi arugument podaj nazwę miasta docelowego.");
+            navigateMe.ListCities();
+        } else {
+
+            System.out.println("Miasto początkowe: " + args[0]);
+            System.out.println("Miasto docelowe: " + args[1]);
+
+            String fromCityCode = navigateMe.getCityCode(args[0]);
+            String toCityCode = navigateMe.getCityCode(args[1]);
+
+            ArrayList<String> path = null;
+            try {
+                path = navigateMe.getPath(fromCityCode, toCityCode);
+            } catch (IOException ex) {
+                System.err.println("Nie mogę pobrać trasy.");
+                return;
+            }
+
+            System.out.println("\nTwoja trasa:");
+
+            for (String item : path) {
+                //System.out.println(item);
+
+                String fullName = (String) navigateMe.getCityMap().get(item);
+
+                System.out.println("- " + fullName);
+            }
+
         }
-
-        System.out.println("Twoja trasa:");
-
-        for (String item : path) {
-            //System.out.println(item);
-
-            String fullName = (String) navigateMe.getCityMap().get(item);
-
-            System.out.println("- " + fullName);
-        }
-
-        String cityCode = navigateMe.getCityCode("Warszawa");
-        System.out.println("Kod Warszawy: " + cityCode);
 
     }
 
