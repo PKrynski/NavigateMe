@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -22,46 +24,13 @@ public class NavigateMe {
 
     TreeMap<String, String> cities = new TreeMap<>();
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-
-        NavigateMe navigateMe = new NavigateMe();
-
-        try {
-            navigateMe.getCities();
-        } catch (IOException ex) {
-            System.err.println("Nie mogę pobrać listy miast.");
-        }
-
-        //navigateMe.ListCities();
-        
-        ArrayList<String> path = null;
-        try {
-            path = navigateMe.getPath("ELK", "SZZ");
-        } catch (IOException ex) {
-            System.err.println("Nie mogę pobrać trasy.");
-        }
-
-        System.out.println("Twoja trasa:");
-
-        for (String item : path) {
-            //System.out.println(item);
-
-            String fullName = (String) navigateMe.getCityMap().get(item);
-
-            System.out.println("- " + fullName);
-        }
-
-    }
-
     public void addToCityMap(String key, String value) {
 
         this.cities.put(key, value);
     }
 
     public TreeMap getCityMap() {
+
         return this.cities;
     }
 
@@ -104,6 +73,18 @@ public class NavigateMe {
 
     }
 
+    public String getCityCode(String name) {
+
+        for (Map.Entry<String, String> entry : cities.entrySet()) {
+            if (Objects.equals(name, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+
+        return null;
+
+    }
+
     public ArrayList<String> getPath(String from, String to) throws IOException {
 
         ArrayList path = new ArrayList();
@@ -142,6 +123,43 @@ public class NavigateMe {
         }
 
         return path;
+    }
+
+    public static void main(String[] args) {
+
+        for (int i = 0; i < args.length; i++) {
+            System.out.println(args[i]);
+        }
+
+        NavigateMe navigateMe = new NavigateMe();
+
+        try {
+            navigateMe.getCities();
+        } catch (IOException ex) {
+            System.err.println("Nie mogę pobrać listy miast.");
+        }
+
+        //navigateMe.ListCities();
+        ArrayList<String> path = null;
+        try {
+            path = navigateMe.getPath("ELK", "SZZ");
+        } catch (IOException ex) {
+            System.err.println("Nie mogę pobrać trasy.");
+        }
+
+        System.out.println("Twoja trasa:");
+
+        for (String item : path) {
+            //System.out.println(item);
+
+            String fullName = (String) navigateMe.getCityMap().get(item);
+
+            System.out.println("- " + fullName);
+        }
+
+        String cityCode = navigateMe.getCityCode("Warszawa");
+        System.out.println("Kod Warszawy: " + cityCode);
+
     }
 
 }
